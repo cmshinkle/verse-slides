@@ -141,10 +141,10 @@ def test_get_references_single_arg():
     assert refs == ["John 3:16"]
 
 
-def test_get_references_multiple_args():
-    """Test get_references with multiple reference arguments."""
+def test_get_references_multiple_comma_separated():
+    """Test get_references with multiple comma-separated references."""
     args = MagicMock()
-    args.references = ["John 3:16", "Romans 8:28"]
+    args.references = ["John 3:16,", "Romans 8:28"]
     args.file = None
 
     refs = get_references(args)
@@ -161,14 +161,34 @@ def test_get_references_comma_separated():
     assert refs == ["John 3:16", "Romans 8:28", "Psalm 23"]
 
 
-def test_get_references_mixed_comma_and_separate():
-    """Test get_references with mixed comma-separated and separate args."""
+def test_get_references_unquoted_single():
+    """Test get_references with unquoted single reference (split by shell)."""
     args = MagicMock()
-    args.references = ["John 3:16, Romans 8:28", "Psalm 23"]
+    args.references = ["John", "3:16"]
     args.file = None
 
     refs = get_references(args)
-    assert refs == ["John 3:16", "Romans 8:28", "Psalm 23"]
+    assert refs == ["John 3:16"]
+
+
+def test_get_references_unquoted_multiple_comma_separated():
+    """Test get_references with unquoted comma-separated references."""
+    args = MagicMock()
+    args.references = ["John", "3:16,", "Romans", "8:28"]
+    args.file = None
+
+    refs = get_references(args)
+    assert refs == ["John 3:16", "Romans 8:28"]
+
+
+def test_get_references_unquoted_numbered_book():
+    """Test get_references with unquoted numbered book like 1 John."""
+    args = MagicMock()
+    args.references = ["1", "John", "3:16"]
+    args.file = None
+
+    refs = get_references(args)
+    assert refs == ["1 John 3:16"]
 
 
 def test_get_references_from_file(tmp_path):
@@ -231,7 +251,7 @@ def test_get_references_combined_args_and_file(tmp_path):
     ref_file.write_text("Psalm 23\n")
 
     args = MagicMock()
-    args.references = ["John 3:16", "Romans 8:28"]
+    args.references = ["John 3:16,", "Romans 8:28"]
     args.file = str(ref_file)
 
     refs = get_references(args)

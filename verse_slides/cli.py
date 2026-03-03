@@ -24,11 +24,11 @@ def parse_args():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  verse-slides "John 3:16-21"
-  verse-slides "John 3:16-21" "Romans 8:28-30"
+  verse-slides John 3:16-21
+  verse-slides John 3:16-21, Romans 8:28-30
   verse-slides --input-file references.txt
-  verse-slides "Psalm 23" --output-file my-slides.pdf
-  verse-slides "Romans 8" --font-size 72 --separate
+  verse-slides Psalm 23 --output-file my-slides.pdf
+  verse-slides Romans 8 --font-size 72
         """
     )
 
@@ -101,7 +101,7 @@ Examples:
     if not args.references and not args.file:
         parser.print_help()
         print("\nError: No scripture reference provided.", file=sys.stderr)
-        print('Usage: verse-slides "John 3:16-21"', file=sys.stderr)
+        print('Usage: verse-slides John 3:16-21', file=sys.stderr)
         sys.exit(1)
 
     return args
@@ -119,12 +119,13 @@ def get_references(args):
     references = []
 
     # Get references from command-line arguments
+    # Join all positional args with spaces first, then split on commas.
+    # This allows unquoted references like: vs John 3:16, Romans 8:28
     if args.references:
-        for ref in args.references:
-            # Handle comma-separated references
-            if "," in ref:
-                references.extend([r.strip() for r in ref.split(",")])
-            else:
+        combined = " ".join(args.references)
+        for ref in combined.split(","):
+            ref = ref.strip()
+            if ref:
                 references.append(ref)
 
     # Get references from file
