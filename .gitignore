@@ -54,7 +54,7 @@ htmlcov/
 
 # Config with API keys (users create their own)
 # Note: The template config is NOT ignored, only the user's local config
-.scripture-slides/
+.verse-slides/
 
 # Temporary files
 *.tmp

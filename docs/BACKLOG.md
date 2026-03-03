@@ -1,6 +1,6 @@
-# scripture-to-slides Backlog
+# verse-slides Backlog
 
-This file tracks future features, enhancements, and ideas for the scripture-to-slides project.
+This file tracks future features, enhancements, and ideas for the verse-slides project.
 
 ## Priority Legend
 
@@ -52,7 +52,7 @@ Add support for the NET (New English Translation) Bible as an alternative to ESV
 
 1. **CLI Flag:**
    ```bash
-   python -m scripture_slides.cli "John 3:16" --translation net
+   python -m verse_slides.cli "John 3:16" --translation net
    # or --version net
    ```
 
@@ -137,7 +137,7 @@ Add option to skip the title slide and start directly with body slides.
 
 **Implementation:**
 ```bash
-python -m scripture_slides.cli "John 3:16" --no-title-slide
+python -m verse_slides.cli "John 3:16" --no-title-slide
 ```
 
 **Effort Estimate:** Small (~20 lines)
@@ -157,7 +157,7 @@ Add support for different visual themes beyond the default black background.
 
 **Implementation:**
 ```bash
-python -m scripture_slides.cli "John 3:16" --theme light
+python -m verse_slides.cli "John 3:16" --theme light
 ```
 
 **Config:**
@@ -227,7 +227,7 @@ Allow specific verses within a passage to be highlighted (different color, bold,
 
 **Example:**
 ```bash
-python -m scripture_slides.cli "John 3:16-21" --highlight "16,17"
+python -m verse_slides.cli "John 3:16-21" --highlight "16,17"
 ```
 
 ---
@@ -252,7 +252,7 @@ Process multiple scripture lists from a directory of files at once.
 
 **Example:**
 ```bash
-python -m scripture_slides.cli --batch-dir ./weekly-readings/ --output-dir ./output/
+python -m verse_slides.cli --batch-dir ./weekly-readings/ --output-dir ./output/
 ```
 
 ---

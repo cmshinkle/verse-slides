@@ -1,4 +1,4 @@
-"""Configuration management for scripture-to-slides."""
+"""Configuration management for verse-slides."""
 
 import sys
 from pathlib import Path
@@ -28,7 +28,7 @@ combine_passages: true
 
 
 class Config:
-    """Configuration holder for scripture-to-slides."""
+    """Configuration holder for verse-slides."""
 
     def __init__(self, data):
         self.api_endpoint = data.get("api_endpoint", "https://api.esv.org/v3/passage/text/")

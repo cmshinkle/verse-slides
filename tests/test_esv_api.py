@@ -1,10 +1,10 @@
-"""Tests for scripture_slides.esv_api module."""
+"""Tests for verse_slides.esv_api module."""
 
 import pytest
 import responses
 from requests.exceptions import ConnectionError, Timeout, RequestException
 
-from scripture_slides.esv_api import ESVAPIClient, DEFAULT_API_ENDPOINT
+from verse_slides.esv_api import ESVAPIClient, DEFAULT_API_ENDPOINT
 
 
 @pytest.fixture

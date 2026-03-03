@@ -1,4 +1,4 @@
-"""PDF generation for scripture-to-slides."""
+"""PDF generation for verse-slides."""
 
 import os
 from datetime import datetime

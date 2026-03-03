@@ -1,4 +1,4 @@
-"""Command-line interface for scripture-to-slides."""
+"""Command-line interface for verse-slides."""
 
 import sys
 import os
@@ -24,11 +24,11 @@ def parse_args():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  scripture-to-slides "John 3:16-21"
-  scripture-to-slides "John 3:16-21" "Romans 8:28-30"
-  scripture-to-slides --input-file references.txt
-  scripture-to-slides "Psalm 23" --output-file my-slides.pdf
-  scripture-to-slides "Romans 8" --font-size 72 --separate
+  verse-slides "John 3:16-21"
+  verse-slides "John 3:16-21" "Romans 8:28-30"
+  verse-slides --input-file references.txt
+  verse-slides "Psalm 23" --output-file my-slides.pdf
+  verse-slides "Romans 8" --font-size 72 --separate
         """
     )
 
@@ -92,7 +92,7 @@ Examples:
     parser.add_argument(
         "-v", "--version",
         action="version",
-        version=f"scripture-to-slides {__version__}"
+        version=f"verse-slides {__version__}"
     )
 
     args = parser.parse_args()
@@ -101,7 +101,7 @@ Examples:
     if not args.references and not args.file:
         parser.print_help()
         print("\nError: No scripture reference provided.", file=sys.stderr)
-        print('Usage: scripture-to-slides "John 3:16-21"', file=sys.stderr)
+        print('Usage: verse-slides "John 3:16-21"', file=sys.stderr)
         sys.exit(1)
 
     return args

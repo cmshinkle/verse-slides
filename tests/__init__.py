@@ -1,1 +1,1 @@
-"""Test suite for scripture-to-slides."""
+"""Test suite for verse-slides."""

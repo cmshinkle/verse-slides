@@ -1,9 +1,9 @@
-"""Tests for scripture_slides.pdf_generator module."""
+"""Tests for verse_slides.pdf_generator module."""
 
 import pytest
 import os
 from pathlib import Path
-from scripture_slides.pdf_generator import (
+from verse_slides.pdf_generator import (
     PDFGenerator,
     generate_pdf,
     SLIDE_WIDTH,

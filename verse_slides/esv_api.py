@@ -67,7 +67,7 @@ class ESVAPIClient:
 
             # Handle specific error codes
             if response.status_code == 401:
-                error_msg = "ESV API key is invalid. Please check your key in ~/.scripture-slides/config.yaml"
+                error_msg = "ESV API key is invalid. Please check your key in ~/.verse-slides/config.yaml"
                 print(f"Error: {error_msg}", file=sys.stderr)
                 logger.error(f"API authentication failed: 401 Unauthorized")
                 sys.exit(1)

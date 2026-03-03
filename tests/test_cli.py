@@ -1,114 +1,114 @@
-"""Tests for scripture_slides.cli module."""
+"""Tests for verse_slides.cli module."""
 
 import pytest
 import sys
 from unittest.mock import patch, MagicMock, mock_open
 from pathlib import Path
 
-from scripture_slides.cli import parse_args, get_references
+from verse_slides.cli import parse_args, get_references
 
 
 def test_parse_args_single_reference():
     """Test parse_args with single reference."""
-    with patch("sys.argv", ["scripture-to-slides", "John 3:16"]):
+    with patch("sys.argv", ["verse-slides", "John 3:16"]):
         args = parse_args()
         assert args.references == ["John 3:16"]
 
 
 def test_parse_args_multiple_references():
     """Test parse_args with multiple references."""
-    with patch("sys.argv", ["scripture-to-slides", "John 3:16", "Romans 8:28"]):
+    with patch("sys.argv", ["verse-slides", "John 3:16", "Romans 8:28"]):
         args = parse_args()
         assert args.references == ["John 3:16", "Romans 8:28"]
 
 
 def test_parse_args_input_file():
     """Test parse_args with input file flag."""
-    with patch("sys.argv", ["scripture-to-slides", "-f", "refs.txt"]):
+    with patch("sys.argv", ["verse-slides", "-f", "refs.txt"]):
         args = parse_args()
         assert args.file == "refs.txt"
 
 
 def test_parse_args_input_file_long_form():
     """Test parse_args with --input-file flag."""
-    with patch("sys.argv", ["scripture-to-slides", "--input-file", "refs.txt"]):
+    with patch("sys.argv", ["verse-slides", "--input-file", "refs.txt"]):
         args = parse_args()
         assert args.file == "refs.txt"
 
 
 def test_parse_args_output_file():
     """Test parse_args with output file flag."""
-    with patch("sys.argv", ["scripture-to-slides", "John 3:16", "-o", "custom.pdf"]):
+    with patch("sys.argv", ["verse-slides", "John 3:16", "-o", "custom.pdf"]):
         args = parse_args()
         assert args.output == "custom.pdf"
 
 
 def test_parse_args_output_file_long_form():
     """Test parse_args with --output-file flag."""
-    with patch("sys.argv", ["scripture-to-slides", "John 3:16", "--output-file", "custom.pdf"]):
+    with patch("sys.argv", ["verse-slides", "John 3:16", "--output-file", "custom.pdf"]):
         args = parse_args()
         assert args.output == "custom.pdf"
 
 
 def test_parse_args_output_dir():
     """Test parse_args with output directory flag."""
-    with patch("sys.argv", ["scripture-to-slides", "John 3:16", "-d", "~/output"]):
+    with patch("sys.argv", ["verse-slides", "John 3:16", "-d", "~/output"]):
         args = parse_args()
         assert args.output_dir == "~/output"
 
 
 def test_parse_args_output_dir_long_form():
     """Test parse_args with --output-dir flag."""
-    with patch("sys.argv", ["scripture-to-slides", "John 3:16", "--output-dir", "~/output"]):
+    with patch("sys.argv", ["verse-slides", "John 3:16", "--output-dir", "~/output"]):
         args = parse_args()
         assert args.output_dir == "~/output"
 
 
 def test_parse_args_separate_flag():
     """Test parse_args with --separate flag."""
-    with patch("sys.argv", ["scripture-to-slides", "John 3:16", "-s"]):
+    with patch("sys.argv", ["verse-slides", "John 3:16", "-s"]):
         args = parse_args()
         assert args.separate is True
 
 
 def test_parse_args_separate_long_form():
     """Test parse_args with --separate flag (long form)."""
-    with patch("sys.argv", ["scripture-to-slides", "John 3:16", "--separate"]):
+    with patch("sys.argv", ["verse-slides", "John 3:16", "--separate"]):
         args = parse_args()
         assert args.separate is True
 
 
 def test_parse_args_no_headings_flag():
     """Test parse_args with --no-headings flag."""
-    with patch("sys.argv", ["scripture-to-slides", "John 3:16", "--no-headings"]):
+    with patch("sys.argv", ["verse-slides", "John 3:16", "--no-headings"]):
         args = parse_args()
         assert args.no_headings is True
 
 
 def test_parse_args_font_flag():
     """Test parse_args with --font flag."""
-    with patch("sys.argv", ["scripture-to-slides", "John 3:16", "--font", "Times-Roman"]):
+    with patch("sys.argv", ["verse-slides", "John 3:16", "--font", "Times-Roman"]):
         args = parse_args()
         assert args.font == "Times-Roman"
 
 
 def test_parse_args_font_size_flag():
     """Test parse_args with --font-size flag."""
-    with patch("sys.argv", ["scripture-to-slides", "John 3:16", "--font-size", "72"]):
+    with patch("sys.argv", ["verse-slides", "John 3:16", "--font-size", "72"]):
         args = parse_args()
         assert args.font_size == 72
 
 
 def test_parse_args_open_flag():
     """Test parse_args with --open flag."""
-    with patch("sys.argv", ["scripture-to-slides", "John 3:16", "--open"]):
+    with patch("sys.argv", ["verse-slides", "John 3:16", "--open"]):
         args = parse_args()
         assert args.open is True
 
 
 def test_parse_args_no_references_exits():
     """Test parse_args exits when no references provided."""
-    with patch("sys.argv", ["scripture-to-slides"]):
+    with patch("sys.argv", ["verse-slides"]):
         with pytest.raises(SystemExit):
             parse_args()
 
@@ -116,7 +116,7 @@ def test_parse_args_no_references_exits():
 def test_parse_args_multiple_flags_combined():
     """Test parse_args with multiple flags combined."""
     with patch("sys.argv", [
-        "scripture-to-slides",
+        "verse-slides",
         "John 3:16",
         "-o", "custom.pdf",
         "--font-size", "80",
@@ -255,9 +255,9 @@ def test_get_references_strips_whitespace(tmp_path):
     assert refs == ["John 3:16", "Romans 8:28"]
 
 
-@patch("scripture_slides.cli.load_config")
-@patch("scripture_slides.cli.ESVAPIClient")
-@patch("scripture_slides.cli.generate_pdf")
+@patch("verse_slides.cli.load_config")
+@patch("verse_slides.cli.ESVAPIClient")
+@patch("verse_slides.cli.generate_pdf")
 def test_main_basic_flow(mock_generate_pdf, mock_api_client, mock_load_config):
     """Test main function basic flow."""
     # Setup mocks
@@ -280,9 +280,9 @@ def test_main_basic_flow(mock_generate_pdf, mock_api_client, mock_load_config):
     mock_generate_pdf.return_value = "./output/test.pdf"
 
     # Import main here to avoid premature execution
-    from scripture_slides.cli import main
+    from verse_slides.cli import main
 
-    with patch("sys.argv", ["scripture-to-slides", "John 3:16"]):
+    with patch("sys.argv", ["verse-slides", "John 3:16"]):
         main()
 
     # Verify API client was called

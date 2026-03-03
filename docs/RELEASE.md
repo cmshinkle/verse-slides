@@ -1,6 +1,6 @@
 # How to Create a Release
 
-This guide walks through manually creating a new release of scripture-to-slides on GitHub.
+This guide walks through manually creating a new release of verse-slides on GitHub.
 
 **Recommended approach:** Just ask Claude Code to "Create a release" - it will handle all steps automatically.
 
@@ -18,17 +18,17 @@ This guide walks through manually creating a new release of scripture-to-slides 
    ```bash
    source venv/bin/activate
    pytest  # All tests should pass
-   scripture-to-slides "John 3:16" --output-file test.pdf
+   verse-slides "John 3:16" --output-file test.pdf
    ```
 
 3. **Update version numbers** (required)
    - Edit `pyproject.toml` and update the version number
      - Example: `version = "0.1.0"` → `version = "0.2.0"`
-   - Edit `scripture_slides/__init__.py` and update `__version__`
+   - Edit `verse_slides/__init__.py` and update `__version__`
      - Example: `__version__ = "0.1.0"` → `__version__ = "0.2.0"`
    - Commit and push:
      ```bash
-     git add pyproject.toml scripture_slides/__init__.py
+     git add pyproject.toml verse_slides/__init__.py
      git commit -m "Bump version to 0.2.0"
      git push origin main
      ```
@@ -56,7 +56,7 @@ git push origin v0.1.0
 ### Step 2: Create the Release on GitHub
 
 1. **Go to your repository on GitHub**
-   - https://github.com/cmshinkle/scripture-to-slides
+   - https://github.com/cmshinkle/verse-slides
 
 2. **Click "Releases"** (on the right sidebar)
 
@@ -80,7 +80,7 @@ git push origin v0.1.0
 
      ## Installation
 
-     Download `scripture-to-slides` below and follow the instructions in README.md
+     Download `verse-slides` below and follow the instructions in README.md
 
      ## Requirements
 
@@ -96,25 +96,25 @@ Once you publish the release:
 
 1. **Calculate the SHA256 hash** of the release tarball:
    ```bash
-   curl -sL https://github.com/cmshinkle/scripture-to-slides/archive/refs/tags/v0.1.0.tar.gz | shasum -a 256
+   curl -sL https://github.com/cmshinkle/verse-slides/archive/refs/tags/v0.1.0.tar.gz | shasum -a 256
    ```
 
 2. **Update the Homebrew formula** in your tap repository:
-   - Repository: `https://github.com/cmshinkle/homebrew-scripture-to-slides`
-   - File: `scripture-to-slides.rb`
+   - Repository: `https://github.com/cmshinkle/homebrew-verse-slides`
+   - File: `verse-slides.rb`
    - Update the `url` to point to the new tag
    - Update the `sha256` with the hash from step 1
 
 3. **Test the formula locally**:
    ```bash
-   brew uninstall scripture-to-slides  # If already installed
-   brew install --build-from-source scripture-to-slides
-   scripture-to-slides "John 3:16"
+   brew uninstall verse-slides  # If already installed
+   brew install --build-from-source verse-slides
+   verse-slides "John 3:16"
    ```
 
 4. **Commit and push the formula update**:
    ```bash
-   git add scripture-to-slides.rb
+   git add verse-slides.rb
    git commit -m "Update to v0.1.0"
    git push origin main
    ```
@@ -122,20 +122,20 @@ Once you publish the release:
 5. **Users can now upgrade**:
    ```bash
    brew update
-   brew upgrade scripture-to-slides
+   brew upgrade verse-slides
    ```
 
 ## Quick Release Checklist
 
 - [ ] All changes committed and pushed
 - [ ] Tests passing (`pytest`)
-- [ ] Version numbers updated in `pyproject.toml` and `scripture_slides/__init__.py`
+- [ ] Version numbers updated in `pyproject.toml` and `verse_slides/__init__.py`
 - [ ] Git tag created and pushed (`git tag v0.1.0 && git push origin v0.1.0`)
 - [ ] Release created on GitHub with descriptive notes
 - [ ] SHA256 hash calculated for release tarball
 - [ ] Homebrew formula updated in tap repository
 - [ ] Formula changes committed and pushed
-- [ ] Tested installation: `brew uninstall scripture-to-slides && brew install scripture-to-slides`
+- [ ] Tested installation: `brew uninstall verse-slides && brew install verse-slides`
 
 ## Troubleshooting
 
@@ -157,31 +157,31 @@ git push origin v0.1.0
 Common issues:
 1. **SHA256 mismatch**: Recalculate the hash and update the formula
    ```bash
-   curl -sL https://github.com/cmshinkle/scripture-to-slides/archive/refs/tags/vX.Y.Z.tar.gz | shasum -a 256
+   curl -sL https://github.com/cmshinkle/verse-slides/archive/refs/tags/vX.Y.Z.tar.gz | shasum -a 256
    ```
 2. **URL not found**: Make sure the git tag exists and the GitHub release is published
-3. **Syntax error in formula**: Run `brew audit scripture-to-slides` to check
+3. **Syntax error in formula**: Run `brew audit verse-slides` to check
 4. **Missing dependencies**: Ensure Python 3.8+ is available
 
 ### "Users aren't getting the update"
 Users need to run:
 ```bash
 brew update                      # Update Homebrew and tap info
-brew upgrade scripture-to-slides # Upgrade to latest version
+brew upgrade verse-slides # Upgrade to latest version
 ```
 
 If still not working, they can reinstall:
 ```bash
-brew uninstall scripture-to-slides
-brew install scripture-to-slides
+brew uninstall verse-slides
+brew install verse-slides
 ```
 
 ## Example Release Notes Template
 
 ```markdown
-# scripture-to-slides v0.1.0
+# verse-slides v0.1.0
 
-Initial release of scripture-to-slides - a CLI tool to generate presentation-ready PDF slides from scripture passages.
+Initial release of verse-slides - a CLI tool to generate presentation-ready PDF slides from scripture passages.
 
 ## Features
 
@@ -196,19 +196,19 @@ Initial release of scripture-to-slides - a CLI tool to generate presentation-rea
 
 **Homebrew (Recommended):**
 ```bash
-brew tap cmshinkle/scripture-to-slides
-brew install scripture-to-slides
+brew tap cmshinkle/verse-slides
+brew install verse-slides
 ```
 
 **Setup:**
 1. Get free ESV API key: https://api.esv.org
-2. First run creates config at `~/.scripture-slides/config.yaml`
+2. First run creates config at `~/.verse-slides/config.yaml`
 3. Add your API key to the config file
 
 **Usage:**
 ```bash
-scripture-to-slides "John 3:16"
-scripture-to-slides "Psalm 23" --font-size 72 --open
+verse-slides "John 3:16"
+verse-slides "Psalm 23" --font-size 72 --open
 ```
 
 ## Requirements

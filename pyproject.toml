@@ -3,8 +3,8 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "scripture-to-slides"
-version = "0.2.0"
+name = "verse-slides"
+version = "0.3.0"
 description = "CLI tool to fetch scripture and generate presentation-ready PDFs"
 readme = "README.md"
 requires-python = ">=3.8"
@@ -27,7 +27,8 @@ dev = [
 ]
 
 [tool.setuptools]
-packages = ["scripture_slides"]
+packages = ["verse_slides"]
 
 [project.scripts]
-scripture-to-slides = "scripture_slides.cli:main"
+verse-slides = "verse_slides.cli:main"
+vs = "verse_slides.cli:main"

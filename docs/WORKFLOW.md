@@ -1,6 +1,6 @@
 # Development and Release Workflow
 
-This document describes the workflow for developing and releasing scripture-to-slides.
+This document describes the workflow for developing and releasing verse-slides.
 
 ## Day-to-Day Development
 
@@ -12,7 +12,7 @@ Make changes, test, and commit as often as you like. No need to create releases 
 # 2. Test locally with your virtual environment
 cd ~/Documents/Projects/Personal/ESV\ Slides
 source venv/bin/activate
-python -m scripture_slides.cli "John 3:16" --output-file test.pdf
+python -m verse_slides.cli "John 3:16" --output-file test.pdf
 
 # 3. Run tests (optional but recommended)
 pytest
@@ -41,7 +41,7 @@ or
 
 Claude will automatically:
 
-1. ✅ Update version numbers in `pyproject.toml` and `scripture_slides/__init__.py`
+1. ✅ Update version numbers in `pyproject.toml` and `verse_slides/__init__.py`
 2. ✅ Commit and push the version bump
 3. ✅ Create and push a git tag (e.g., `v0.3.0`)
 4. ✅ Create a GitHub release with release notes
@@ -55,12 +55,12 @@ Users can now get your updates:
 
 ```bash
 # New users
-brew tap cmshinkle/scripture-to-slides
-brew install scripture-to-slides
+brew tap cmshinkle/verse-slides
+brew install verse-slides
 
 # Existing users
 brew update
-brew upgrade scripture-to-slides
+brew upgrade verse-slides
 ```
 
 ## Semantic Versioning Guide
@@ -108,7 +108,7 @@ Before asking Claude to create a release:
 
 - [ ] All changes committed and pushed to main
 - [ ] Tests passing (`pytest`)
-- [ ] Tested locally with `python -m scripture_slides.cli`
+- [ ] Tested locally with `python -m verse_slides.cli`
 - [ ] Ready to share changes with users
 
 Then just say: **"Create a release"**
@@ -116,32 +116,32 @@ Then just say: **"Create a release"**
 ## Repository Structure
 
 ### Main Repository
-**Location**: `cmshinkle/scripture-to-slides`
+**Location**: `cmshinkle/verse-slides`
 - Contains the Python source code
 - Git tags trigger releases when you create them
 
 ### Homebrew Tap Repository
-**Location**: `cmshinkle/homebrew-scripture-to-slides`
-- Contains the Homebrew formula (`scripture-to-slides.rb`)
+**Location**: `cmshinkle/homebrew-verse-slides`
+- Contains the Homebrew formula (`verse-slides.rb`)
 - Automatically updated when you create a release
-- Users install via `brew tap cmshinkle/scripture-to-slides`
+- Users install via `brew tap cmshinkle/verse-slides`
 
 ## Distribution
 
 ### Homebrew Installation
 ```bash
-brew tap cmshinkle/scripture-to-slides
-brew install scripture-to-slides
+brew tap cmshinkle/verse-slides
+brew install verse-slides
 ```
 
-**Updates**: Users run `brew update && brew upgrade scripture-to-slides`
+**Updates**: Users run `brew update && brew upgrade verse-slides`
 
 ## Troubleshooting
 
 ### "Version still shows old number"
 Make sure both version strings are updated:
 - `pyproject.toml`: `version = "0.3.0"`
-- `scripture_slides/__init__.py`: `__version__ = "0.3.0"`
+- `verse_slides/__init__.py`: `__version__ = "0.3.0"`
 
 ### "Homebrew users aren't getting updates"
 Check that:

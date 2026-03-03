@@ -1,8 +1,10 @@
-# scripture-to-slides
+# verse-slides
 
 A command-line tool that fetches scripture and generates presentation-ready PDF slides for group scripture reading in youth groups, Bible studies, and church services.
 
 Currently supports ESV (English Standard Version) via the ESV.org API.
+
+**Tip:** You can use `vs` as a short alias for `verse-slides` in all commands below.
 
 ## Features
 
@@ -21,10 +23,10 @@ Currently supports ESV (English Standard Version) via the ESV.org API.
 
 ```bash
 # Add the tap
-brew tap cmshinkle/scripture-to-slides
+brew tap cmshinkle/verse-slides
 
 # Install the tool
-brew install scripture-to-slides
+brew install verse-slides
 ```
 
 ### Install from Source (For Developers)
@@ -37,8 +39,8 @@ brew install scripture-to-slides
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/cmshinkle/scripture-to-slides.git
-   cd scripture-to-slides
+   git clone https://github.com/cmshinkle/verse-slides.git
+   cd verse-slides
    ```
 
 2. Create a virtual environment:
@@ -54,30 +56,28 @@ brew install scripture-to-slides
 
 4. Run the tool:
    ```bash
-   scripture-to-slides "John 3:16"
+   verse-slides "John 3:16"
    ```
 
 ## Quick Start
 
 1. **First run** - Generate config file:
    ```bash
-   scripture-to-slides "John 3:16"
+   verse-slides "John 3:16"
    ```
-   This creates `~/.scripture-slides/config.yaml`
+   This creates `~/.verse-slides/config.yaml`
 
 2. **Add your API key** - Edit the config file:
    ```bash
-   open ~/.scripture-slides/config.yaml
+   open ~/.verse-slides/config.yaml
    ```
    Replace `your-esv-api-key-here` with your actual API key from https://api.esv.org
 
 3. **Generate slides**:
    ```bash
-   scripture-to-slides "John 3:16-21"
+   verse-slides "John 3:16-21"
    ```
    Your PDF will be saved to the current directory
-
-**Note:** If you installed from source, use `scripture-to-slides` instead of `scripture-to-slides`
 
 ## Usage Examples
 
@@ -85,19 +85,19 @@ brew install scripture-to-slides
 
 ```bash
 # Single verse
-scripture-to-slides "John 3:16"
+verse-slides "John 3:16"
 
 # Verse range
-scripture-to-slides "John 3:16-21"
+verse-slides "John 3:16-21"
 
 # Whole chapter
-scripture-to-slides "Psalm 23"
+verse-slides "Psalm 23"
 
 # Multiple passages (combined into one PDF)
-scripture-to-slides "John 3:16-21" "Romans 8:28-30"
+verse-slides "John 3:16-21" "Romans 8:28-30"
 
 # Comma-separated references
-scripture-to-slides "John 3:16, Romans 8:28, Psalm 23"
+verse-slides "John 3:16, Romans 8:28, Psalm 23"
 ```
 
 ### File Input
@@ -114,39 +114,39 @@ Matthew 5:1-12
 
 Then generate slides:
 ```bash
-scripture-to-slides --input-file references.txt
+verse-slides --input-file references.txt
 ```
 
 ### Custom Output
 
 ```bash
 # Custom filename
-scripture-to-slides "Psalm 23" --output-file sunday-sermon.pdf
+verse-slides "Psalm 23" --output-file sunday-sermon.pdf
 
 # Custom output directory
-scripture-to-slides "John 3:16" --output-dir ~/Documents/Slides
+verse-slides "John 3:16" --output-dir ~/Documents/Slides
 
 # Separate PDFs for each passage
-scripture-to-slides "John 3:16" "Romans 8:28" --separate
+verse-slides "John 3:16" "Romans 8:28" --separate
 
 # Auto-open PDF after generation
-scripture-to-slides "Psalm 23" --open
+verse-slides "Psalm 23" --open
 ```
 
 ### Customization
 
 ```bash
 # Different font
-scripture-to-slides "John 3:16" --font Times-Roman
+verse-slides "John 3:16" --font Times-Roman
 
 # Custom font size (default: 64pt)
-scripture-to-slides "John 3:16" --font-size 72
+verse-slides "John 3:16" --font-size 72
 
 # No section headings
-scripture-to-slides "Matthew 5:1-12" --no-headings
+verse-slides "Matthew 5:1-12" --no-headings
 
 # Combine multiple options
-scripture-to-slides "Psalm 23" --font-size 80 --output-file large-psalm.pdf --open
+verse-slides "Psalm 23" --font-size 80 --output-file large-psalm.pdf --open
 ```
 
 ## Command-Line Options
@@ -189,7 +189,7 @@ scripture-to-slides "Psalm 23" --font-size 80 --output-file large-psalm.pdf --op
 
 ## Configuration
 
-Settings can be configured in `~/.scripture-slides/config.yaml`:
+Settings can be configured in `~/.verse-slides/config.yaml`:
 
 ```yaml
 # Bible API settings
@@ -233,7 +233,7 @@ Command-line flags override config file settings.
 2. Click "Get API Key"
 3. Create a free account
 4. Copy your API key
-5. Add it to `~/.scripture-slides/config.yaml`
+5. Add it to `~/.verse-slides/config.yaml`
 
 The API key is free for personal and church use.
 
@@ -241,7 +241,7 @@ The API key is free for personal and church use.
 
 ### "Config file created" message
 - The tool created a config file for you
-- Add your ESV API key to `~/.scripture-slides/config.yaml`
+- Add your ESV API key to `~/.verse-slides/config.yaml`
 - Run the command again
 
 ### "ESV API key is invalid"
@@ -262,22 +262,22 @@ The API key is free for personal and church use.
 
 ### Youth Group
 ```bash
-scripture-to-slides "John 3:16-21" "Romans 5:8" --font-size 72 --open
+verse-slides "John 3:16-21" "Romans 5:8" --font-size 72 --open
 ```
 
 ### Bible Study Series
 ```bash
-scripture-to-slides --input-file romans-study.txt --separate --output-dir ~/RomansSeries
+verse-slides --input-file romans-study.txt --separate --output-dir ~/RomansSeries
 ```
 
 ### Sunday Sermon
 ```bash
-scripture-to-slides "Matthew 5:1-20" --output-file sermon-beatitudes.pdf --font-size 64 --open
+verse-slides "Matthew 5:1-20" --output-file sermon-beatitudes.pdf --font-size 64 --open
 ```
 
 ### Worship Service Readings
 ```bash
-scripture-to-slides "Psalm 23" "John 10:11-18" --output-file good-shepherd-readings.pdf
+verse-slides "Psalm 23" "John 10:11-18" --output-file good-shepherd-readings.pdf
 ```
 
 ## License

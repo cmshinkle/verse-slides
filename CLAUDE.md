@@ -4,9 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**scripture-to-slides** is a Python CLI tool that fetches scripture from the ESV.org API and generates presentation-ready PDF slides (16:9 aspect ratio) for group scripture reading in youth groups, Bible studies, and church services.
+**verse-slides** is a Python CLI tool that fetches scripture from the ESV.org API and generates presentation-ready PDF slides (16:9 aspect ratio) for group scripture reading in youth groups, Bible studies, and church services.
 
-The tool was designed with future extensibility in mind (hence "scripture-to-slides" rather than "esv-slides") to potentially support additional Bible translations beyond ESV.
+The tool was designed with future extensibility in mind to potentially support additional Bible translations beyond ESV. The short alias `vs` can be used instead of `verse-slides` for convenience.
 
 ## Development Setup
 
@@ -22,20 +22,20 @@ pip install requests reportlab pyyaml
 pip install pytest pytest-cov pytest-mock responses
 
 # Run the tool
-python -m scripture_slides.cli "John 3:16"
+python -m verse_slides.cli "John 3:16"
 ```
 
 ## Testing
 
 ```bash
-# Run all tests (86 tests, 85% coverage)
+# Run all tests (89 tests, 85% coverage)
 pytest
 
 # Run with verbose output
 pytest -v
 
 # Run with coverage report
-pytest --cov=scripture_slides --cov-report=term-missing
+pytest --cov=verse_slides --cov-report=term-missing
 
 # Run a single test file
 pytest tests/test_pdf_generator.py
@@ -49,10 +49,10 @@ pytest tests/test_cli.py::test_parse_args_single_reference
 ### Module Structure
 
 - **cli.py**: Command-line interface using argparse. Entry point for the application.
-- **config.py**: Configuration management. Creates `~/.scripture-slides/config.yaml` on first run.
+- **config.py**: Configuration management. Creates `~/.verse-slides/config.yaml` on first run.
 - **esv_api.py**: ESV API client with comprehensive error handling (401, 429, timeouts, etc.).
 - **pdf_generator.py**: PDF generation using ReportLab. Contains the core slide layout logic.
-- **utils.py**: Utility functions (logging, path management, filename sanitization).
+- **utils.py**: Utility functions (logging, path management, filename sanitization, config migration).
 
 ### Critical Design Decisions
 
@@ -88,10 +88,11 @@ Scale factor = `font_size / 64.0`, then multiply all sizes by this factor.
 
 #### 4. Configuration System (config.py)
 
-- User config lives at `~/.scripture-slides/config.yaml`
+- User config lives at `~/.verse-slides/config.yaml`
 - First run creates default config with template API key
 - CLI flags override config file settings
 - Config validation happens in `load_config()` (exits with error code 1 if API key missing)
+- Auto-migration: `utils.py:migrate_config_dir()` moves `~/.scripture-slides/` to `~/.verse-slides/` on first run
 
 ### PDF Slide Layout Constants
 
@@ -108,7 +109,7 @@ MARGIN_BOTTOM = 120
 
 ### Bible API Integration
 
-**Configurable endpoint**: The API endpoint is configurable via `api_endpoint` in `~/.scripture-slides/config.yaml`. This allows support for different Bible translation APIs in the future.
+**Configurable endpoint**: The API endpoint is configurable via `api_endpoint` in `~/.verse-slides/config.yaml`. This allows support for different Bible translation APIs in the future.
 
 Default endpoint: `https://api.esv.org/v3/passage/text/` (ESV API)
 
@@ -132,14 +133,14 @@ The API returns canonical references (e.g., "John 3:16–21" with en-dash). Use 
 Use Psalm 23 for poetry formatting and Matthew 5:1-12 for headings + pagination:
 
 ```bash
-python -m scripture_slides.cli "Psalm 23" --output-file test-psalm.pdf --open
-python -m scripture_slides.cli "Matthew 5:1-12" --output-file test-sermon.pdf --open
+python -m verse_slides.cli "Psalm 23" --output-file test-psalm.pdf --open
+python -m verse_slides.cli "Matthew 5:1-12" --output-file test-sermon.pdf --open
 ```
 
 ### Testing Multiple Passages
 
 ```bash
-python -m scripture_slides.cli "John 3:16" "Romans 8:28" --separate
+python -m verse_slides.cli "John 3:16" "Romans 8:28" --separate
 ```
 
 ### Running with Custom Fonts
@@ -171,7 +172,7 @@ Verse numbers in brackets `[16]` are rendered as white superscript:
 
 ### Error Handling Philosophy
 
-All modules use `sys.exit(1)` for fatal errors (invalid API key, connection failures, etc.) with clear user-facing error messages printed to stderr. Logging goes to `~/.scripture-slides/scripture-slides.log`.
+All modules use `sys.exit(1)` for fatal errors (invalid API key, connection failures, etc.) with clear user-facing error messages printed to stderr. Logging goes to `~/.verse-slides/verse-slides.log`.
 
 ## Git Workflow
 
@@ -190,10 +191,10 @@ git push origin main
 
 ## Configuration File Location
 
-User config: `~/.scripture-slides/config.yaml`
-Log file: `~/.scripture-slides/scripture-slides.log`
+User config: `~/.verse-slides/config.yaml`
+Log file: `~/.verse-slides/verse-slides.log`
 
-**Note**: The directory was renamed from `.esv-slides` to `.scripture-slides` to match the project rename. The `.gitignore` excludes this directory.
+**Note**: The config directory was renamed from `.scripture-slides` to `.verse-slides`. Auto-migration handles this transparently on first run. The `.gitignore` excludes this directory.
 
 ## Known Limitations
 
@@ -204,7 +205,7 @@ Log file: `~/.scripture-slides/scripture-slides.log`
 
 ## Test Coverage
 
-Current coverage: **85%** (86 tests)
+Current coverage: **85%** (89 tests)
 
 Most uncovered lines are in:
 - CLI display/output code (hard to test without capturing stdout)
