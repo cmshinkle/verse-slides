@@ -71,6 +71,24 @@ Examples:
     )
 
     parser.add_argument(
+        "--footnotes",
+        action="store_true",
+        help="Include footnotes in the scripture text"
+    )
+
+    parser.add_argument(
+        "--refs",
+        action="store_true",
+        help="Include passage references in the scripture text"
+    )
+
+    parser.add_argument(
+        "--blank-end-page",
+        action="store_true",
+        help="Add a blank black page at the end of the PDF"
+    )
+
+    parser.add_argument(
         "--font",
         metavar="NAME",
         help="Font family to use (default: Helvetica; also supports Times-Roman, Courier)"
@@ -162,13 +180,19 @@ def main():
 
     # Override config with command-line arguments if provided
     include_headings = not args.no_headings if args.no_headings else config.include_section_headings
+    include_footnotes = args.footnotes if args.footnotes else config.include_footnotes
+    include_refs = args.refs if args.refs else config.include_passage_references
+    blank_end_page = args.blank_end_page if args.blank_end_page else config.add_blank_end_page
     output_dir = args.output_dir if args.output_dir else config.output_directory
     font = args.font if args.font else config.font
     font_size = args.font_size if args.font_size else config.font_size
     auto_open = args.open if args.open else config.auto_open
 
     # Create API client
-    client = ESVAPIClient(config.api_key, api_endpoint=config.api_endpoint, include_headings=include_headings)
+    client = ESVAPIClient(config.api_key, api_endpoint=config.api_endpoint,
+                          include_headings=include_headings,
+                          include_footnotes=include_footnotes,
+                          include_passage_references=include_refs)
 
     # Fetch all passages
     print(f"Fetching {len(references)} passage(s)...")
@@ -188,7 +212,8 @@ def main():
         for passage in passages:
             # Create filename from reference
             filename = sanitize_filename(passage['reference']) + ".pdf"
-            output_path = generate_pdf([passage], output_dir, filename, font, font_size)
+            output_path = generate_pdf([passage], output_dir, filename, font, font_size,
+                                       blank_end_page=blank_end_page)
             generated_files.append(output_path)
             print(f"  ✓ {output_path}")
 
@@ -201,7 +226,8 @@ def main():
     else:
         # Generate combined PDF
         filename = args.output if args.output else None
-        output_path = generate_pdf(passages, output_dir, filename, font, font_size)
+        output_path = generate_pdf(passages, output_dir, filename, font, font_size,
+                                   blank_end_page=blank_end_page)
         print(f"  ✓ {output_path}")
 
         print(f"\nSuccessfully generated PDF: {output_path}")

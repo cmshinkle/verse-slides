@@ -106,6 +106,27 @@ def test_parse_args_open_flag():
         assert args.open is True
 
 
+def test_parse_args_footnotes_flag():
+    """Test parse_args with --footnotes flag."""
+    with patch("sys.argv", ["verse-slides", "John 3:16", "--footnotes"]):
+        args = parse_args()
+        assert args.footnotes is True
+
+
+def test_parse_args_refs_flag():
+    """Test parse_args with --refs flag."""
+    with patch("sys.argv", ["verse-slides", "John 3:16", "--refs"]):
+        args = parse_args()
+        assert args.refs is True
+
+
+def test_parse_args_blank_end_page_flag():
+    """Test parse_args with --blank-end-page flag."""
+    with patch("sys.argv", ["verse-slides", "John 3:16", "--blank-end-page"]):
+        args = parse_args()
+        assert args.blank_end_page is True
+
+
 def test_parse_args_no_references_exits():
     """Test parse_args exits when no references provided."""
     with patch("sys.argv", ["verse-slides"]):

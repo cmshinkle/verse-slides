@@ -245,6 +245,28 @@ def test_generate_pdf_timestamp_filename(tmp_path, sample_passage):
     assert output_path.endswith(".pdf")
 
 
+def test_create_pdf_with_blank_end_page(temp_pdf_path, sample_passage):
+    """Test that create_pdf with blank end page generates a valid PDF."""
+    generator = PDFGenerator(temp_pdf_path)
+    generator.create_pdf([sample_passage], add_blank_end_page=True)
+
+    assert os.path.exists(temp_pdf_path)
+    assert os.path.getsize(temp_pdf_path) > 0
+
+
+def test_generate_pdf_with_blank_end_page(tmp_path, sample_passage):
+    """Test generate_pdf with blank_end_page flag."""
+    output_dir = str(tmp_path)
+    output_path = generate_pdf(
+        [sample_passage],
+        output_dir=output_dir,
+        output_filename="test.pdf",
+        blank_end_page=True,
+    )
+
+    assert os.path.exists(output_path)
+
+
 def test_wrap_text_single_line(temp_pdf_path):
     """Test _wrap_text with text that fits on one line."""
     generator = PDFGenerator(temp_pdf_path)

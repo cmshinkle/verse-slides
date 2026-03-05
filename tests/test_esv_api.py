@@ -273,6 +273,48 @@ def test_custom_api_endpoint():
     assert responses.calls[0].request.url.startswith(custom_endpoint)
 
 
+@responses.activate
+def test_fetch_passage_with_footnotes():
+    """Test fetch_passage with include_footnotes=True."""
+    client = ESVAPIClient(api_key="test-key", include_footnotes=True)
+
+    responses.add(
+        responses.GET,
+        DEFAULT_API_ENDPOINT,
+        json={
+            "passages": ["Test passage with footnotes"],
+            "passage_meta": [{"canonical": "John 3:16"}],
+        },
+        status=200,
+    )
+
+    client.fetch_passage("John 3:16")
+
+    request = responses.calls[0].request
+    assert "include-footnotes=True" in request.url
+
+
+@responses.activate
+def test_fetch_passage_with_passage_references():
+    """Test fetch_passage with include_passage_references=True."""
+    client = ESVAPIClient(api_key="test-key", include_passage_references=True)
+
+    responses.add(
+        responses.GET,
+        DEFAULT_API_ENDPOINT,
+        json={
+            "passages": ["John 3:16\nTest passage"],
+            "passage_meta": [{"canonical": "John 3:16"}],
+        },
+        status=200,
+    )
+
+    client.fetch_passage("John 3:16")
+
+    request = responses.calls[0].request
+    assert "include-passage-references=True" in request.url
+
+
 def test_api_endpoint_defaults_to_esv():
     """Test that API endpoint defaults to ESV when not provided."""
     client = ESVAPIClient(api_key="test-key")

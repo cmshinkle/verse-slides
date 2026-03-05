@@ -23,6 +23,9 @@ font_size: 64          # Points (adjust based on testing)
 # Behavior
 auto_open: false
 include_section_headings: true
+include_footnotes: false
+include_passage_references: false
+add_blank_end_page: false
 combine_passages: true
 """
 
@@ -39,6 +42,9 @@ class Config:
         self.font_size = data.get("font_size", 64)
         self.auto_open = data.get("auto_open", False)
         self.include_section_headings = data.get("include_section_headings", True)
+        self.include_footnotes = data.get("include_footnotes", False)
+        self.include_passage_references = data.get("include_passage_references", False)
+        self.add_blank_end_page = data.get("add_blank_end_page", False)
         self.combine_passages = data.get("combine_passages", True)
 
 

@@ -13,17 +13,22 @@ DEFAULT_API_ENDPOINT = "https://api.esv.org/v3/passage/text/"
 class ESVAPIClient:
     """Client for interacting with Bible APIs (primarily ESV)."""
 
-    def __init__(self, api_key, api_endpoint=None, include_headings=True):
+    def __init__(self, api_key, api_endpoint=None, include_headings=True,
+                 include_footnotes=False, include_passage_references=False):
         """Initialize the API client.
 
         Args:
             api_key: API authorization token
             api_endpoint: API endpoint URL (defaults to ESV API)
             include_headings: Whether to include section headings
+            include_footnotes: Whether to include footnotes
+            include_passage_references: Whether to include passage references
         """
         self.api_key = api_key
         self.api_endpoint = api_endpoint or DEFAULT_API_ENDPOINT
         self.include_headings = include_headings
+        self.include_footnotes = include_footnotes
+        self.include_passage_references = include_passage_references
 
     def fetch_passage(self, reference):
         """Fetch a scripture passage from the ESV API.
@@ -50,10 +55,10 @@ class ESVAPIClient:
 
         params = {
             "q": reference,
-            "include-passage-references": False,
+            "include-passage-references": self.include_passage_references,
             "include-verse-numbers": True,
             "include-first-verse-numbers": True,
-            "include-footnotes": False,
+            "include-footnotes": self.include_footnotes,
             "include-headings": self.include_headings,
             "include-short-copyright": False,
             "indent-poetry": True,

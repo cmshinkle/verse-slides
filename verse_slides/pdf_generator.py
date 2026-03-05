@@ -72,11 +72,12 @@ class PDFGenerator:
         """
         return self.font_bold_map.get(self.font, self.font + "-Bold")
 
-    def create_pdf(self, passages):
+    def create_pdf(self, passages, add_blank_end_page=False):
         """Create a PDF with slides for the given passages.
 
         Args:
             passages: List of passage dictionaries with 'text' and 'reference' keys
+            add_blank_end_page: Whether to add a blank black page at the end
         """
         logger.info(f"Creating PDF at {self.output_path}")
 
@@ -90,9 +91,18 @@ class PDFGenerator:
             self._create_title_slide(passage)
             self._create_body_slides(passage)  # Changed to plural - creates multiple slides
 
+        if add_blank_end_page:
+            self._create_blank_slide()
+
         # Save PDF
         self.c.save()
         logger.info(f"PDF saved successfully: {self.output_path}")
+
+    def _create_blank_slide(self):
+        """Create a blank black slide."""
+        self.c.setFillColor(BG_COLOR)
+        self.c.rect(0, 0, SLIDE_WIDTH, SLIDE_HEIGHT, fill=True, stroke=False)
+        self.c.showPage()
 
     def _create_title_slide(self, passage):
         """Create a title slide for a passage.
@@ -463,7 +473,8 @@ class PDFGenerator:
         self.c.drawString(MARGIN_LEFT, MARGIN_BOTTOM - 60, text)
 
 
-def generate_pdf(passages, output_dir=".", output_filename=None, font="Helvetica", font_size=64):
+def generate_pdf(passages, output_dir=".", output_filename=None, font="Helvetica", font_size=64,
+                 blank_end_page=False):
     """Generate a PDF with slides for the given passages.
 
     Args:
@@ -472,6 +483,7 @@ def generate_pdf(passages, output_dir=".", output_filename=None, font="Helvetica
         output_filename: Custom filename (optional)
         font: Font family to use
         font_size: Body text font size in points
+        blank_end_page: Whether to add a blank black page at the end
 
     Returns:
         str: Path to the generated PDF
@@ -492,6 +504,6 @@ def generate_pdf(passages, output_dir=".", output_filename=None, font="Helvetica
 
     # Create PDF
     generator = PDFGenerator(output_path, font=font, font_size=font_size)
-    generator.create_pdf(passages)
+    generator.create_pdf(passages, add_blank_end_page=blank_end_page)
 
     return output_path
