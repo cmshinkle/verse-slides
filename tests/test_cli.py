@@ -113,11 +113,18 @@ def test_parse_args_footnotes_flag():
         assert args.footnotes is True
 
 
-def test_parse_args_refs_flag():
-    """Test parse_args with --refs flag."""
-    with patch("sys.argv", ["verse-slides", "John 3:16", "--refs"]):
+def test_parse_args_passage_refs_flag():
+    """Test parse_args with --passage-refs flag."""
+    with patch("sys.argv", ["verse-slides", "John 3:16", "--passage-refs"]):
         args = parse_args()
-        assert args.refs is True
+        assert args.passage_refs is True
+
+
+def test_parse_args_no_title_slide_flag():
+    """Test parse_args with --no-title-slide flag."""
+    with patch("sys.argv", ["verse-slides", "John 3:16", "--no-title-slide"]):
+        args = parse_args()
+        assert args.no_title_slide is True
 
 
 def test_parse_args_blank_end_page_flag():

@@ -254,6 +254,15 @@ def test_create_pdf_with_blank_end_page(temp_pdf_path, sample_passage):
     assert os.path.getsize(temp_pdf_path) > 0
 
 
+def test_create_pdf_without_title_slide(temp_pdf_path, sample_passage):
+    """Test that create_pdf without title slide generates a valid PDF."""
+    generator = PDFGenerator(temp_pdf_path)
+    generator.create_pdf([sample_passage], include_title_slide=False)
+
+    assert os.path.exists(temp_pdf_path)
+    assert os.path.getsize(temp_pdf_path) > 0
+
+
 def test_generate_pdf_with_blank_end_page(tmp_path, sample_passage):
     """Test generate_pdf with blank_end_page flag."""
     output_dir = str(tmp_path)

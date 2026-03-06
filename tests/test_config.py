@@ -23,6 +23,7 @@ def test_config_initialization_with_defaults():
     assert config.include_footnotes is False
     assert config.include_passage_references is False
     assert config.add_blank_end_page is False
+    assert config.include_title_slide is True
     assert config.combine_passages is True
 
 

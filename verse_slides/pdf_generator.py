@@ -1,6 +1,7 @@
 """PDF generation for verse-slides."""
 
 import os
+import re
 from datetime import datetime
 from reportlab.lib.pagesizes import landscape
 from reportlab.lib.units import inch
@@ -32,6 +33,7 @@ FOOTER_FONT_SIZE = 24
 BG_COLOR = colors.HexColor("#000000")  # Black
 TEXT_COLOR = colors.HexColor("#FFFFFF")  # White
 VERSE_NUMBER_COLOR = colors.HexColor("#FFFFFF")  # White for verse numbers
+FOOTNOTE_MARKER_COLOR = colors.HexColor("#00FFFF")  # Cyan for footnote markers
 
 
 class PDFGenerator:
@@ -64,6 +66,13 @@ class PDFGenerator:
             "Courier": "Courier-Bold",
         }
 
+        # Map base fonts to their italic/oblique variants
+        self.font_italic_map = {
+            "Helvetica": "Helvetica-Oblique",
+            "Times-Roman": "Times-Italic",
+            "Courier": "Courier-Oblique",
+        }
+
     def _get_bold_font(self):
         """Get the bold variant of the current font.
 
@@ -72,12 +81,21 @@ class PDFGenerator:
         """
         return self.font_bold_map.get(self.font, self.font + "-Bold")
 
-    def create_pdf(self, passages, add_blank_end_page=False):
+    def _get_italic_font(self):
+        """Get the italic variant of the current font.
+
+        Returns:
+            str: Italic font name
+        """
+        return self.font_italic_map.get(self.font, self.font + "-Oblique")
+
+    def create_pdf(self, passages, add_blank_end_page=False, include_title_slide=True):
         """Create a PDF with slides for the given passages.
 
         Args:
             passages: List of passage dictionaries with 'text' and 'reference' keys
             add_blank_end_page: Whether to add a blank black page at the end
+            include_title_slide: Whether to include the title slide for each passage
         """
         logger.info(f"Creating PDF at {self.output_path}")
 
@@ -88,7 +106,8 @@ class PDFGenerator:
         )
 
         for passage in passages:
-            self._create_title_slide(passage)
+            if include_title_slide:
+                self._create_title_slide(passage)
             self._create_body_slides(passage)  # Changed to plural - creates multiple slides
 
         if add_blank_end_page:
@@ -199,6 +218,30 @@ class PDFGenerator:
                 return True
         return False
 
+    def _split_footnotes(self, text):
+        """Split passage text into body text and footnotes.
+
+        The ESV API appends footnotes after a 'Footnotes' heading, e.g.:
+            Footnotes
+
+            (1) 3:16 Or *For this is how God loved the world*
+
+        Args:
+            text: Full passage text from the API
+
+        Returns:
+            tuple: (body_text, footnote_lines) where footnote_lines is a list of strings
+        """
+        # Split on the "Footnotes" section
+        parts = re.split(r'\n\s*Footnotes\s*\n', text, maxsplit=1)
+        if len(parts) == 1:
+            return text, []
+
+        body_text = parts[0]
+        footnote_text = parts[1]
+        footnote_lines = [line.strip() for line in footnote_text.split('\n') if line.strip()]
+        return body_text, footnote_lines
+
     def _parse_passage_elements(self, text):
         """Parse passage text into structured elements (headings, body text, and poetry lines).
 
@@ -256,8 +299,11 @@ class PDFGenerator:
         """
         text = passage["text"]
 
+        # Separate footnotes from body text
+        body_text, footnote_lines = self._split_footnotes(text)
+
         # Parse text into structured elements
-        elements = self._parse_passage_elements(text)
+        elements = self._parse_passage_elements(body_text)
 
         # Calculate available width
         available_width = SLIDE_WIDTH - MARGIN_LEFT - MARGIN_RIGHT
@@ -355,6 +401,10 @@ class PDFGenerator:
                 self._create_single_body_slide_with_headings(current_slide, passage["reference"], line_height)
                 slide_num += 1
 
+        # Create a separate footnotes slide if there are footnotes
+        if footnote_lines:
+            self._create_footnotes_slide(footnote_lines, passage["reference"])
+
     def _render_line_with_colored_verse_numbers(self, x, y, line):
         """Render a line with verse numbers in grey superscript and text in white.
 
@@ -368,20 +418,24 @@ class PDFGenerator:
         """
         import re
 
-        # Pattern to match verse numbers in brackets
-        pattern = r'\[(\d+)\]'
+        # Pattern to match verse numbers in brackets [16] or footnote markers (1)
+        pattern = r'\[(\d+)\]|\((\d+)\)'
 
         # Split line into segments
         segments = []
         last_end = 0
 
         for match in re.finditer(pattern, line):
-            # Add text before verse number
+            # Add text before the match
             if match.start() > last_end:
                 segments.append(('text', line[last_end:match.start()]))
 
-            # Add verse number (without brackets)
-            segments.append(('verse', match.group(1)))  # Just the number, not brackets
+            if match.group(1):
+                # Verse number [16]
+                segments.append(('verse', match.group(1)))
+            else:
+                # Footnote marker (1)
+                segments.append(('footnote_marker', match.group(2)))
             last_end = match.end()
 
         # Add remaining text
@@ -392,14 +446,21 @@ class PDFGenerator:
         current_x = x
         for seg_type, seg_text in segments:
             if seg_type == 'verse':
-                # Verse numbers: grey, smaller, raised (superscript)
+                # Verse numbers: white, smaller, raised (superscript)
                 self.c.setFillColor(VERSE_NUMBER_COLOR)
                 self.c.setFont(self.font, self.verse_number_font_size)
-                # Raise the baseline for superscript effect
                 superscript_y = y + (self.body_font_size * 0.4)
                 self.c.drawString(current_x, superscript_y, seg_text)
                 current_x += self.c.stringWidth(seg_text, self.font, self.verse_number_font_size)
-                # Reset font for next segment
+                self.c.setFont(self.font, self.body_font_size)
+            elif seg_type == 'footnote_marker':
+                # Footnote markers: cyan, italic, smaller, raised (superscript) with parens
+                self.c.setFillColor(FOOTNOTE_MARKER_COLOR)
+                self.c.setFont(self._get_italic_font(), self.verse_number_font_size)
+                superscript_y = y + (self.body_font_size * 0.4)
+                display_text = f"({seg_text})"
+                self.c.drawString(current_x, superscript_y, display_text)
+                current_x += self.c.stringWidth(display_text, self._get_italic_font(), self.verse_number_font_size)
                 self.c.setFont(self.font, self.body_font_size)
             else:
                 # Regular text: white, normal size
@@ -463,6 +524,86 @@ class PDFGenerator:
         # New page
         self.c.showPage()
 
+    def _create_footnotes_slide(self, footnotes, reference):
+        """Create a dedicated slide for footnotes.
+
+        Args:
+            footnotes: List of footnote strings
+            reference: Scripture reference for the footer
+        """
+        # Black background
+        self.c.setFillColor(BG_COLOR)
+        self.c.rect(0, 0, SLIDE_WIDTH, SLIDE_HEIGHT, fill=True, stroke=False)
+
+        footnote_font_size = self.body_font_size * 0.5
+        footnote_line_height = footnote_font_size * 1.5
+        available_width = SLIDE_WIDTH - MARGIN_LEFT - MARGIN_RIGHT
+
+        y = SLIDE_HEIGHT - MARGIN_TOP
+
+        # Draw "Footnotes" heading
+        self.c.setFillColor(TEXT_COLOR)
+        self.c.setFont(self._get_bold_font(), self.body_font_size)
+        heading = "Footnotes"
+        heading_width = self.c.stringWidth(heading, self._get_bold_font(), self.body_font_size)
+        self.c.drawString((SLIDE_WIDTH - heading_width) / 2, y, heading)
+        y -= self.body_font_size * 1.5  # Space after heading
+
+        # Render each footnote line
+        for note in footnotes:
+            # Strip italic markers (*text*) from footnotes
+            note = note.replace('*', '')
+
+            # Split the leading footnote number from the rest of the text
+            # Format: "(1) 3:16 Or For this is how God loved the world"
+            fn_match = re.match(r'\((\d+)\)\s*(.*)', note)
+            if fn_match:
+                fn_number = fn_match.group(1)
+                fn_text = fn_match.group(2)
+
+                # Render footnote number with parens in cyan italic
+                fn_display = f"({fn_number})"
+                self.c.setFillColor(FOOTNOTE_MARKER_COLOR)
+                self.c.setFont(self._get_italic_font(), footnote_font_size)
+                self.c.drawString(MARGIN_LEFT, y, fn_display)
+                number_width = self.c.stringWidth(fn_display + " ", self._get_italic_font(), footnote_font_size)
+
+                # Wrap and render the rest of the footnote text in white
+                indent_width = number_width
+                first_line_width = available_width - indent_width
+                # Wrap the text for the first line with reduced width
+                first_wrapped = self._wrap_text(fn_text, first_line_width, self.font, footnote_font_size)
+                # Render first line after the number
+                if first_wrapped:
+                    self.c.setFillColor(TEXT_COLOR)
+                    self.c.setFont(self.font, footnote_font_size)
+                    self.c.drawString(MARGIN_LEFT + indent_width, y, first_wrapped[0])
+                    y -= footnote_line_height
+
+                    # If text wraps, rejoin remaining text and wrap at full width
+                    if len(first_wrapped) > 1:
+                        remaining = ' '.join(first_wrapped[1:])
+                        rest_wrapped = self._wrap_text(remaining, available_width, self.font, footnote_font_size)
+                        for line in rest_wrapped:
+                            self.c.setFillColor(TEXT_COLOR)
+                            self.c.setFont(self.font, footnote_font_size)
+                            self.c.drawString(MARGIN_LEFT, y, line)
+                            y -= footnote_line_height
+            else:
+                # No number prefix, just render as plain text
+                wrapped = self._wrap_text(note, available_width, self.font, footnote_font_size)
+                for line in wrapped:
+                    self.c.setFillColor(TEXT_COLOR)
+                    self.c.setFont(self.font, footnote_font_size)
+                    self.c.drawString(MARGIN_LEFT, y, line)
+                    y -= footnote_line_height
+
+        # Draw footer
+        self._draw_footer(f"{reference} | ESV® Bible © 2001 Crossway")
+
+        # New page
+        self.c.showPage()
+
     def _draw_footer(self, text):
         """Draw footer text at the bottom of the slide.
 
@@ -474,7 +615,7 @@ class PDFGenerator:
 
 
 def generate_pdf(passages, output_dir=".", output_filename=None, font="Helvetica", font_size=64,
-                 blank_end_page=False):
+                 blank_end_page=False, include_title_slide=True):
     """Generate a PDF with slides for the given passages.
 
     Args:
@@ -484,6 +625,7 @@ def generate_pdf(passages, output_dir=".", output_filename=None, font="Helvetica
         font: Font family to use
         font_size: Body text font size in points
         blank_end_page: Whether to add a blank black page at the end
+        include_title_slide: Whether to include the title slide for each passage
 
     Returns:
         str: Path to the generated PDF
@@ -504,6 +646,7 @@ def generate_pdf(passages, output_dir=".", output_filename=None, font="Helvetica
 
     # Create PDF
     generator = PDFGenerator(output_path, font=font, font_size=font_size)
-    generator.create_pdf(passages, add_blank_end_page=blank_end_page)
+    generator.create_pdf(passages, add_blank_end_page=blank_end_page,
+                         include_title_slide=include_title_slide)
 
     return output_path

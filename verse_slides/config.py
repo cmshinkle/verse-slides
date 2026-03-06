@@ -26,6 +26,7 @@ include_section_headings: true
 include_footnotes: false
 include_passage_references: false
 add_blank_end_page: false
+include_title_slide: true
 combine_passages: true
 """
 
@@ -45,6 +46,7 @@ class Config:
         self.include_footnotes = data.get("include_footnotes", False)
         self.include_passage_references = data.get("include_passage_references", False)
         self.add_blank_end_page = data.get("add_blank_end_page", False)
+        self.include_title_slide = data.get("include_title_slide", True)
         self.combine_passages = data.get("combine_passages", True)
 
 

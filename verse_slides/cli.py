@@ -77,9 +77,15 @@ Examples:
     )
 
     parser.add_argument(
-        "--refs",
+        "--passage-refs",
         action="store_true",
         help="Include passage references in the scripture text"
+    )
+
+    parser.add_argument(
+        "--no-title-slide",
+        action="store_true",
+        help="Skip the title slide showing the passage reference"
     )
 
     parser.add_argument(
@@ -181,7 +187,8 @@ def main():
     # Override config with command-line arguments if provided
     include_headings = not args.no_headings if args.no_headings else config.include_section_headings
     include_footnotes = args.footnotes if args.footnotes else config.include_footnotes
-    include_refs = args.refs if args.refs else config.include_passage_references
+    include_refs = args.passage_refs if args.passage_refs else config.include_passage_references
+    include_title_slide = not args.no_title_slide if args.no_title_slide else config.include_title_slide
     blank_end_page = args.blank_end_page if args.blank_end_page else config.add_blank_end_page
     output_dir = args.output_dir if args.output_dir else config.output_directory
     font = args.font if args.font else config.font
@@ -213,7 +220,8 @@ def main():
             # Create filename from reference
             filename = sanitize_filename(passage['reference']) + ".pdf"
             output_path = generate_pdf([passage], output_dir, filename, font, font_size,
-                                       blank_end_page=blank_end_page)
+                                       blank_end_page=blank_end_page,
+                                       include_title_slide=include_title_slide)
             generated_files.append(output_path)
             print(f"  ✓ {output_path}")
 
@@ -227,7 +235,8 @@ def main():
         # Generate combined PDF
         filename = args.output if args.output else None
         output_path = generate_pdf(passages, output_dir, filename, font, font_size,
-                                   blank_end_page=blank_end_page)
+                                   blank_end_page=blank_end_page,
+                                   include_title_slide=include_title_slide)
         print(f"  ✓ {output_path}")
 
         print(f"\nSuccessfully generated PDF: {output_path}")
